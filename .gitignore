@@ -17,3 +17,5 @@
 .idea
 
 cmd/app/app
+
+golist.json
