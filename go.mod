@@ -1,4 +1,4 @@
-module literate-spork
+module github.com/webngt/literate-spork
 
 go 1.17
 
