@@ -9,12 +9,14 @@ res=$?
 [ $res -eq 1 ] && jq --null-input --arg error "$modules" '{"error": $error }' && exit 1
 
 # no module found
-[ "$modules" = "" ] && jq --null-input --arg error "no module found in path $mod_path" '{"error": $error }' && exit 1
+[ "$modules" = "" ] && \
+jq --null-input --arg error "no module found in path $mod_path" '{"error": $error }' && exit 1
 
 
 for module in $modules
-do    
-    cd $(dirname $module)
+do  
+    mod_dir=$(dirname $module)  
+    cd $mod_dir
 
     # run linter
     linter_out=$(golangci-lint run ./...)
@@ -27,5 +29,10 @@ do
 
     [ $res -eq 1 ] && unit_test_fail=$unit_test_out || unit_test_ok=$unit_test_out
 
-    jq --null-input --arg linter_out "$linter_out" --arg unit_test_fail "$unit_test_fail" --arg unit_test_ok "$unit_test_ok" '{"linter_out": $linter_out, "unit_test_fail": $unit_test_fail, "unit_test_ok", $unit_test_ok }'
+    jq --null-input \
+    --arg linter_out "$linter_out" \
+    --arg unit_test_fail "$unit_test_fail" \
+    --arg unit_test_ok "$unit_test_ok" \
+    --arg mod_dir "$mod_dir" \
+    '{"linter_out": $linter_out, "unit_test_fail": $unit_test_fail, "unit_test_ok": $unit_test_ok, "mod_dir": $mod_dir }'
 done | jq -n '.results |= [inputs]'
