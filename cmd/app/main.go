@@ -20,6 +20,6 @@ func main() {
 		fmt.Println(err)
 	}
 
-	spork.ClosureExample(os.Stdout)
+	<-spork.ClosureExample(os.Stdout)
 
 }
